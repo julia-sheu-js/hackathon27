@@ -1,6 +1,7 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { Providers, useFB } from "@/app/components/providers";
 import type { FoodListing } from "@/app/types";
 
@@ -13,13 +14,32 @@ const pill: Record<string, string> = {
 export default function Home() {
   return (
     <Providers>
-      <Dashboard />
+      <Suspense fallback={<p> Loading... </p>}>
+        <DashboardFromLogin />
+      </Suspense>
     </Providers>
   );
 }
 
+function DashboardFromLogin() {
+  const loginRole = useSearchParams().get("role");
+  const { role, setRole } = useFB();
+
+  useEffect(() => {
+    if ((loginRole === "school" || loginRole === "charity") && role !== loginRole) {
+      setRole(loginRole);
+    }
+  }, [loginRole, role, setRole]);
+
+  if ((loginRole === "school" || loginRole === "charity") && role !== loginRole) {
+    return <p>Loading...</p>;
+  }
+
+  return <Dashboard />;
+}
+
 function Dashboard() {
-  const { role, setRole, profile, listings, requests, createListing, requestFood, decideRequest } =
+  const { role, profile, listings, requests, createListing, requestFood, decideRequest } =
     useFB();
   const [tab, setTab] = useState<"food" | "requests">("food");
   const [showForm, setShowForm] = useState(false);
@@ -41,14 +61,6 @@ function Dashboard() {
     <main className="min-h-screen bg-gray-50">
       <nav className="flex items-center justify-between border-b bg-white px-8 py-4">
         <span className="text-xl font-bold text-green-800">FoodBridge</span>
-        <select
-          value={role}
-          onChange={(e) => setRole(e.target.value as "school" | "charity")}
-          className="border px-3 py-1.5"
-        >
-          <option value="school">School</option>
-          <option value="charity">Charity</option>
-        </select>
       </nav>
 
       <div className="mx-auto max-w-5xl px-6 py-8">
