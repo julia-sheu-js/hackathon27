@@ -11,8 +11,8 @@ import {
 import type { FoodListing, FoodRequest, Profile, Role } from "@/app/types";
 
 const profiles: Record<Role, Profile> = {
-  school: { id: "s1", organization_name: "SAS", organization_type: "school" },
-  charity: { id: "c1", organization_name: "Community Table SG", organization_type: "charity" },
+  school: { id: "s1", organization_type: "school" },
+  charity: { id: "c1", organization_type: "charity" },
 };
 
 const seedListings: FoodListing[] = [
